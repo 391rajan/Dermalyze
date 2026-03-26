@@ -1,10 +1,16 @@
 from flask import Flask, render_template, request, redirect, url_for
 from werkzeug.utils import secure_filename
 import os
+import numpy as np
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras.applications.resnet50 import preprocess_input
-import numpy as np
+
+try:
+    import gdown
+    GDOWN_AVAILABLE = True
+except ImportError:
+    GDOWN_AVAILABLE = False
 
 app = Flask(__name__)
 
@@ -13,15 +19,16 @@ UPLOAD_FOLDER = 'static/uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-import os
-import gdown
-
 MODEL_PATH = "model.h5"
 
 def download_model():
     if not os.path.exists(MODEL_PATH):
+        if not GDOWN_AVAILABLE:
+            raise RuntimeError(
+                "model.h5 not found and gdown is not installed. "
+                "Install gdown with: pip install gdown"
+            )
         print("Downloading model...")
-        # This is your shared Drive file ID
         file_id = "1i-uE2sN-Lh96WVe1AkegbyE8QQ0eoNLq"
         url = f"https://drive.google.com/uc?id={file_id}"
         gdown.download(url, MODEL_PATH, quiet=False)
@@ -38,15 +45,15 @@ model = load_model(MODEL_PATH)
 
 # Class labels
 class_names = {
-    0: "Actinic keratosis",
-    1: "Atopic Dermatitis",
-    2: "Benign keratosis",
+    0: "Actinic Keratosis",
+    1: "Acne",
+    2: "Basal Cell Carcinoma",
     3: "Dermatofibroma",
-    4: "Melanocytic nevus",
-    5: "Melanoma",
-    6: "Squamous cell carcinoma",
-    7: "Tinea Ringworm Candidiasis",
-    8: "Vascular lesion"
+    4: "Melanoma",
+    5: "Melanocytic Nevus",
+    6: "Squamous Cell Carcinoma",
+    7: "Seborrheic Keratosis",
+    8: "Vascular Lesions"
 }
 
 # Home route
