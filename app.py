@@ -37,9 +37,17 @@ def download_model():
 # Call this before model load
 download_model()
 
+# Handle Keras version mismatches (quantization_config error on Render)
+from tensorflow.keras.models import load_model
+from tensorflow.keras.layers import Dense
+
+class CustomDense(Dense):
+    def __init__(self, *args, **kwargs):
+        kwargs.pop('quantization_config', None)
+        super().__init__(*args, **kwargs)
+
 # Now you can safely load the model
-from keras.models import load_model
-model = load_model(MODEL_PATH)
+model = load_model(MODEL_PATH, custom_objects={'Dense': CustomDense}, compile=False)
 
 
 
