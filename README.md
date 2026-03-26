@@ -3,7 +3,7 @@
 ![Dermalyze](https://img.shields.io/badge/Skin-Disease%20Detection-success?style=flat-square)
 ![Status](https://img.shields.io/badge/Status-Completed-blue)
 
-
+🔗 **Live Demo:** [https://dermalyze-915b.onrender.com](https://dermalyze-915b.onrender.com/)
 
 ---
 
