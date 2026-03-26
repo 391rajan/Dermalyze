@@ -29,9 +29,9 @@ def download_model():
                 "Install gdown with: pip install gdown"
             )
         print("Downloading model...")
-        file_id = "1i-uE2sN-Lh96WVe1AkegbyE8QQ0eoNLq"
-        url = f"https://drive.google.com/uc?id={file_id}"
-        gdown.download(url, MODEL_PATH, quiet=False)
+        file_id = "1wSRB2XOzB2uHj5Ecc5_F9GyvoiNJI6vy"
+        # Using id=file_id directly is more reliable for large files in newer gdown versions
+        gdown.download(id=file_id, output=MODEL_PATH, quiet=False)
         print("Model downloaded.")
 
 # Call this before model load
