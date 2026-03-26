@@ -2,9 +2,6 @@ from flask import Flask, render_template, request, redirect, url_for
 from werkzeug.utils import secure_filename
 import os
 import numpy as np
-from tensorflow.keras.models import load_model
-from tensorflow.keras.preprocessing import image
-from tensorflow.keras.applications.resnet50 import preprocess_input
 
 try:
     import gdown
@@ -21,7 +18,18 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 MODEL_PATH = "model.h5"
 
-def download_model():
+# Lazy loading: model is None until first prediction request
+model = None
+
+def get_model():
+    """Download and load model on first use (lazy loading).
+    This allows the Flask server to start and open the port immediately,
+    preventing Render's port scan timeout."""
+    global model
+    if model is not None:
+        return model
+
+    # Step 1: Download if not present
     if not os.path.exists(MODEL_PATH):
         if not GDOWN_AVAILABLE:
             raise RuntimeError(
@@ -30,26 +38,22 @@ def download_model():
             )
         print("Downloading model...")
         file_id = "1wSRB2XOzB2uHj5Ecc5_F9GyvoiNJI6vy"
-        # Using id=file_id directly is more reliable for large files in newer gdown versions
         gdown.download(id=file_id, output=MODEL_PATH, quiet=False)
         print("Model downloaded.")
 
-# Call this before model load
-download_model()
+    # Step 2: Load model with compatibility fix
+    from tensorflow.keras.models import load_model
+    from tensorflow.keras.layers import Dense
 
-# Handle Keras version mismatches (quantization_config error on Render)
-from tensorflow.keras.models import load_model
-from tensorflow.keras.layers import Dense
+    class CustomDense(Dense):
+        def __init__(self, *args, **kwargs):
+            kwargs.pop('quantization_config', None)
+            super().__init__(*args, **kwargs)
 
-class CustomDense(Dense):
-    def __init__(self, *args, **kwargs):
-        kwargs.pop('quantization_config', None)
-        super().__init__(*args, **kwargs)
-
-# Now you can safely load the model
-model = load_model(MODEL_PATH, custom_objects={'Dense': CustomDense}, compile=False)
-
-
+    print("Loading model into memory...")
+    model = load_model(MODEL_PATH, custom_objects={'Dense': CustomDense}, compile=False)
+    print("Model loaded successfully!")
+    return model
 
 # Class labels
 class_names = {
@@ -84,6 +88,7 @@ def prediction():
 @app.route("/contact")
 def contact():
     return render_template("contact.html")
+
 # Prediction route
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -100,13 +105,17 @@ def predict():
         file.save(file_path)
 
         # Preprocess image
+        from tensorflow.keras.preprocessing import image
+        from tensorflow.keras.applications.resnet50 import preprocess_input
+
         img = image.load_img(file_path, target_size=(224, 224))
         img_array = image.img_to_array(img)
         img_array = np.expand_dims(img_array, axis=0)
         img_array = preprocess_input(img_array)
 
-        # Predict
-        preds = model.predict(img_array)
+        # Predict using lazy-loaded model
+        loaded_model = get_model()
+        preds = loaded_model.predict(img_array)
         pred_index = np.argmax(preds)
         pred_class = class_names[pred_index]
 
