@@ -119,19 +119,3 @@ python app.py
 
 ---
 
-# ⭐ Credits
-- ResNet50 via Keras
-
-- Bootstrap 5
-
-- Flask Web Framework
-
-- Font Awesome
-
-- Google Fonts
-
-
-## 🚀 Live Demo
-
-📍 Deployed on Render.com : [https://dermascan-skin-disease-detection-using-dl.onrender.com/](https://dermascan-skin-disease-detection-using-dl.onrender.com/)
-
