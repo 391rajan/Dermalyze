@@ -1,6 +1,6 @@
-# 🌿 DermaScan – Skin Disease Detection
+# 🌿 Dermalyze – Skin Disease Detection
 
-![DermaScan](https://img.shields.io/badge/Skin-Disease%20Detection-success?style=flat-square)
+![Dermalyze](https://img.shields.io/badge/Skin-Disease%20Detection-success?style=flat-square)
 ![Status](https://img.shields.io/badge/Status-Completed-blue)
 
 
@@ -21,7 +21,7 @@
 
 ## 📖 About the Project
 
-**DermaScan** is a Flask-based web app that detects skin diseases and classifies skin types using a deep learning model. Users can upload an image or use their webcam, and the system predicts the skin disease or type in real-time.
+**Dermalyze** is a Flask-based web app that detects skin diseases and classifies skin types using a deep learning model. Users can upload an image or use their webcam, and the system predicts the skin disease or type in real-time.
 
 ---
 
@@ -47,8 +47,8 @@
 
 ### Clone the repository
 ```bash
-git clone https://github.com/your-username/dermascan.git
-cd dermascan
+git clone https://github.com/your-username/dermalyze.git
+cd dermalyze
 ```
 ### Install dependencies
 
@@ -81,7 +81,7 @@ python app.py
 
 # 📁 Project Structure
 
-    dermascan/
+    dermalyze/
     │
     ├── static/
     │   ├── style.css
